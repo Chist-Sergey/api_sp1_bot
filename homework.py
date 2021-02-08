@@ -39,9 +39,10 @@ def get_homework_statuses(current_timestamp):
     params = {
         'from_date': current_timestamp,
     }
-    homework_statuses = requests.get(
-                API_URL, params=params, headers=headers
-    )
+    homework_statuses = requests.get(API_URL,
+                                     params=params,
+                                     headers=headers
+                                     )
     return homework_statuses.json()
 
 
@@ -63,11 +64,11 @@ def main():
             new_homework = get_homework_statuses(current_timestamp)
             if new_homework.get('homeworks'):
                 send_message(parse_homework_status(
-                    new_homework.get('homeworks')[0])
+                    new_homework.get('homeworks')[0]),
+                    bot
                     )
-            current_timestamp = new_homework.get(
-                'current_date', current_timestamp
-                )
+                current_timestamp = new_homework.get(
+                                    'current_date', current_timestamp)
             time.sleep(TIME_REPEAT_RESPONSE)
 
         except Exception as error:
