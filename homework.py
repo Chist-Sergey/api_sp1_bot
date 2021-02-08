@@ -66,9 +66,10 @@ def main():
                 send_message(parse_homework_status(
                     new_homework.get('homeworks')[0]),
                     bot
-                    )
+                )
                 current_timestamp = new_homework.get(
-                                    'current_date', current_timestamp)
+                                    'current_date', current_timestamp
+                                    )
             time.sleep(TIME_REPEAT_RESPONSE)
 
         except Exception as error:
