@@ -16,12 +16,13 @@ CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 API_URL = 'https://praktikum.yandex.ru/api/user_api/homework_statuses/'
 
 TIME_REPEAT_RESPONSE = 300
-TIME_TIMESTAMP = 5
 TIME_SLEEP = 5
 
 
 def parse_homework_status(homework):
     homework_name = homework.get('homework_name')
+    if homework_name is None:
+        return 'Нам не повезло, и нам пришли пустые данные'
     if homework.get('status') == 'reviewing':
         verdict = 'Ваша работа проходит ревью.'
     if homework.get('status') == 'approved':
@@ -33,16 +34,22 @@ def parse_homework_status(homework):
 
 
 def get_homework_statuses(current_timestamp):
+    if current_timestamp is None:
+        return 'Server did not respond'
     headers = {
         'Authorization': f'OAuth {PRAKTIKUM_TOKEN}',
     }
     params = {
         'from_date': current_timestamp,
     }
-    homework_statuses = requests.get(API_URL,
-                                     params=params,
-                                     headers=headers
-                                     )
+    try:
+        homework_statuses = requests.get(API_URL,
+                                         params=params,
+                                         headers=headers
+                                         )
+    except requests.HTTPError:
+        logging.warning('Сервер не ответил')
+        return 'Can\'t connect to the server'
     return homework_statuses.json()
 
 
@@ -57,7 +64,7 @@ def send_message(message, bot_client):
 
 def main():
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
-    current_timestamp = int(time.time(TIME_TIMESTAMP))
+    current_timestamp = int(time.time())
 
     while True:
         try:
