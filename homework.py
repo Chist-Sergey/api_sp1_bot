@@ -21,7 +21,7 @@ TIME_SLEEP = 5
 
 def parse_homework_status(homework):
     homework_name = homework.get('homework_name')
-    if homework_name is None:
+    if homework_name is None or homework.get('status') is None:
         return 'Нам не повезло, и нам пришли пустые данные'
     if homework.get('status') == 'reviewing':
         verdict = 'Ваша работа проходит ревью.'
@@ -35,7 +35,7 @@ def parse_homework_status(homework):
 
 def get_homework_statuses(current_timestamp):
     if current_timestamp is None:
-        return 'Server did not respond'
+        current_timestamp = int(time.time())
     headers = {
         'Authorization': f'OAuth {PRAKTIKUM_TOKEN}',
     }
@@ -54,11 +54,6 @@ def get_homework_statuses(current_timestamp):
 
 
 def send_message(message, bot_client):
-    try:
-        str(message)
-    except ValueError:
-        logging.error('Бот не смог отправить сообщение.')
-        return 'Message not sent. Please enter valid characters'
     return bot_client.send_message(chat_id=CHAT_ID, text=message)
 
 
